@@ -271,3 +271,8 @@ style:
   WildcardImport:
     active: true
     excludeImports: []
+
+ruleauthors:
+  RequiresTypeResolution:
+    active: true
+    excludes: ['**/test/**', '**/*Test.kt', '**/*Spec.kt']
