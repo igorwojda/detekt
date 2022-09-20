@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.api.DefaultEditorConfigProperties.codeStyleSetP
 import com.pinterest.ktlint.core.api.UsesEditorConfigProperties
 import io.github.detekt.psi.fileName
 import io.github.detekt.psi.toFilePath
+import io.gitlab.arturbosch.detekt.api.CodeSmell
 import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.CorrectableCodeSmell
 import io.gitlab.arturbosch.detekt.api.Debt
@@ -30,6 +31,9 @@ import org.jetbrains.kotlin.psi.psiUtil.endOffset
 abstract class FormattingRule(config: Config) : Rule(config) {
 
     abstract val wrapping: com.pinterest.ktlint.core.Rule
+
+    // KtLint has rules which prompts the user to manually correct issues e.g. Filename and PackageName.
+    open val canBeCorrectedByKtLint: Boolean = true
 
     /**
      * Should the android style guide be enforced?
@@ -102,7 +106,12 @@ abstract class FormattingRule(config: Config) : Rule(config) {
                 ?.plus(".")
                 .orEmpty()
             val entity = Entity("", "$packageName${root.fileName}:$line", location, root)
-            report(CorrectableCodeSmell(issue, entity, message, autoCorrectEnabled = autoCorrect))
+
+            if (canBeCorrectedByKtLint) {
+                report(CorrectableCodeSmell(issue, entity, message, autoCorrectEnabled = autoCorrect))
+            } else {
+                report(CodeSmell(issue, entity, message))
+            }
         }
     }
 

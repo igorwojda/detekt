@@ -16,4 +16,5 @@ class PackageName(config: Config) : FormattingRule(config) {
 
     override val wrapping = PackageNameRule()
     override val issue = issueFor("Checks package name is formatted correctly")
+    override val canBeCorrectedByKtLint: Boolean = false
 }
